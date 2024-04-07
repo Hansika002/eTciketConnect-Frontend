@@ -22,6 +22,8 @@ function Bookings() {
   const [ticket, setTicket] = useState([]);
   const [currentPage, setCurrentPage] = useState(0); // react-paginate uses zero-based indexing
   const [entriesPerPage] = useState(10);
+  const [overallTotalPrice, setOverallTotalPrice] = useState(0); // State to store overall total price
+  
 
   const convertToIST = (utcDate) => {
     const date = new Date(utcDate);
@@ -50,6 +52,23 @@ function Bookings() {
   useEffect(() => {
     fetchUserTicket();
   }, []);
+
+  useEffect(() => {
+    // Calculate total price for the selected date
+    let totalPrice = 0;
+    ticket.forEach(item => {
+      const itemDate = new Date(item.date);
+      const selectedDate = new Date(inpdate);
+      if (
+        itemDate.getDate() === selectedDate.getDate() &&
+        itemDate.getMonth() === selectedDate.getMonth() &&
+        itemDate.getFullYear() === selectedDate.getFullYear()
+      ) {
+        totalPrice += parseFloat(item.price); // Assuming price is stored as string, convert it to float
+      }
+    });
+    setOverallTotalPrice(totalPrice);
+  }, [ticket, inpdate]);
 
   if(inpdate === null)
   {
@@ -154,6 +173,11 @@ function Bookings() {
           <div className="select-date">
           <h3>Select Date</h3>
           <DatePicker onChange={datechanged} value={inpdate} />
+          </div>
+
+          <div classname="CNDT-Message" style={{marginTop :"40px", display: "flex"}}>
+          <h2 style={{color: "#bb0052"}}>Total Ticket Price</h2>
+          <h2>: {overallTotalPrice}</h2>
           </div>
           
         </div>
